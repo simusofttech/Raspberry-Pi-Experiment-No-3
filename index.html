@@ -1,0 +1,1818 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Raspberry Pi Experiment No. 4 | Automatic Light Control
+    </title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f3f6fa;
+
+            color: #111827;
+
+            line-height: 1.65;
+        }
+
+
+        /* ==============================
+           HEADER
+        ============================== */
+
+        header {
+            padding:
+                55px 20px 50px;
+
+            text-align: center;
+
+            color: white;
+
+            background: #2f6be6;
+        }
+
+        header h1 {
+            margin: 0;
+
+            font-size: 38px;
+
+            font-weight: 700;
+        }
+
+        header p {
+            margin:
+                15px 0 0;
+
+            font-size: 19px;
+        }
+
+
+        /* ==============================
+           NAVIGATION
+        ============================== */
+
+        nav {
+            position: sticky;
+
+            top: 0;
+
+            z-index: 100;
+
+            display: flex;
+
+            justify-content: center;
+
+            flex-wrap: wrap;
+
+            gap: 24px;
+
+            padding:
+                17px 20px;
+
+            background: white;
+
+            border-bottom:
+                1px solid #d8dee8;
+        }
+
+        nav a {
+            color: #0c328c;
+
+            text-decoration: none;
+
+            font-weight: bold;
+
+            font-size: 15px;
+        }
+
+        nav a:hover {
+            color: #2f6be6;
+        }
+
+
+        /* ==============================
+           CONTAINER
+        ============================== */
+
+        .container {
+            width: 90%;
+
+            max-width: 1050px;
+
+            margin: auto;
+
+            padding:
+                38px 0 60px;
+        }
+
+
+        /* ==============================
+           SECTION
+        ============================== */
+
+        .section {
+            margin-bottom: 26px;
+
+            padding: 30px;
+
+            background: white;
+
+            border:
+                1px solid #d8dee8;
+
+            border-radius: 11px;
+
+            box-shadow:
+                0 4px 14px
+                rgba(15, 23, 42, 0.05);
+        }
+
+        .section h2 {
+            margin:
+                0 0 20px;
+
+            padding-bottom: 11px;
+
+            color: #12358b;
+
+            border-bottom:
+                2px solid #d7e5ff;
+
+            font-size: 27px;
+        }
+
+        .section h3 {
+            margin-top: 25px;
+
+            color: #12358b;
+        }
+
+
+        /* ==============================
+           COMPONENTS
+        ============================== */
+
+        .components-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 15px;
+
+            margin-top: 18px;
+        }
+
+        .component {
+            padding: 20px;
+
+            text-align: center;
+
+            background: #f7f9fc;
+
+            border:
+                1px solid #d8dee8;
+
+            border-radius: 8px;
+        }
+
+        .component strong {
+            display: block;
+
+            margin-bottom: 6px;
+
+            color: #12358b;
+
+            font-size: 16px;
+        }
+
+        .component p {
+            margin: 0;
+
+            color: #64748b;
+
+            font-size: 14px;
+        }
+
+
+        /* ==============================
+           TABLE
+        ============================== */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+
+            min-width: 550px;
+
+            margin-top: 15px;
+
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 13px;
+
+            text-align: left;
+
+            border:
+                1px solid #d8dee8;
+        }
+
+        th {
+            color: white;
+
+            background: #2f6be6;
+        }
+
+        tr:nth-child(even) {
+            background: #f7f9fc;
+        }
+
+
+        /* ==============================
+           BOX
+        ============================== */
+
+        .connection-box {
+            margin-top: 15px;
+
+            padding: 16px;
+
+            text-align: center;
+
+            background: #f5f8fd;
+
+            border:
+                1px solid #d8e2f0;
+
+            border-radius: 7px;
+
+            font-family:
+                Consolas,
+                monospace;
+        }
+
+
+        /* ==============================
+           STEPS
+        ============================== */
+
+        .steps {
+            margin: 0;
+
+            padding-left: 22px;
+        }
+
+        .steps li {
+            margin-bottom: 10px;
+        }
+
+
+        /* ==============================
+           CODE
+        ============================== */
+
+        .code-header {
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            padding:
+                11px 15px;
+
+            color: white;
+
+            background: #172033;
+
+            border-radius:
+                7px 7px 0 0;
+        }
+
+        .copy-button {
+            padding:
+                7px 13px;
+
+            color: white;
+
+            background: #2f6be6;
+
+            border: none;
+
+            border-radius: 5px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+        }
+
+        .copy-button:hover {
+            background: #1e55c5;
+        }
+
+        pre {
+            margin: 0;
+
+            padding: 20px;
+
+            overflow-x: auto;
+
+            color: #e5e7eb;
+
+            background: #0b1120;
+
+            border-radius:
+                0 0 7px 7px;
+
+            font-family:
+                Consolas,
+                "Courier New",
+                monospace;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+        }
+
+
+        /* ==============================
+           NOTE
+        ============================== */
+
+        .note {
+            margin-top: 18px;
+
+            padding: 15px;
+
+            color: #854d0e;
+
+            background: #fefce8;
+
+            border:
+                1px solid #fde68a;
+
+            border-radius: 7px;
+        }
+
+
+        /* ==============================
+           OUTPUT
+        ============================== */
+
+        .output-box {
+            padding: 18px;
+
+            color: #e5e7eb;
+
+            background: #111827;
+
+            border-radius: 7px;
+
+            font-family:
+                Consolas,
+                monospace;
+        }
+
+
+        /* ==============================
+           RESULT
+        ============================== */
+
+        .result-box {
+            padding: 18px;
+
+            color: #166534;
+
+            background: #f0fdf4;
+
+            border:
+                1px solid #bbf7d0;
+
+            border-radius: 7px;
+        }
+
+
+        /* ==============================
+           FOOTER
+        ============================== */
+
+        footer {
+            padding:
+                28px 20px;
+
+            text-align: center;
+
+            color: #64748b;
+
+            background: white;
+
+            border-top:
+                1px solid #d8dee8;
+        }
+
+        footer strong {
+            color: #12358b;
+        }
+
+
+        /* ==============================
+           RESPONSIVE
+        ============================== */
+
+        @media (
+            max-width: 700px
+        ) {
+
+            header h1 {
+                font-size: 29px;
+            }
+
+            header p {
+                font-size: 17px;
+            }
+
+            nav {
+                gap: 13px;
+            }
+
+            .container {
+                width: 94%;
+            }
+
+            .section {
+                padding: 21px;
+            }
+
+            .components-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+
+<body>
+
+
+<!-- ==============================
+     HEADER
+============================== -->
+
+<header>
+
+    <h1>
+        Raspberry Pi Experiment No. 4
+    </h1>
+
+    <p>
+        Automatic Light Control using LDR
+    </p>
+
+</header>
+
+
+
+<!-- ==============================
+     NAVIGATION
+============================== -->
+
+<nav>
+
+    <a href="#aim">
+        Aim
+    </a>
+
+    <a href="#components">
+        Components
+    </a>
+
+    <a href="#connections">
+        Connections
+    </a>
+
+    <a href="#working">
+        Working
+    </a>
+
+    <a href="#procedure">
+        Procedure
+    </a>
+
+    <a href="#code">
+        Code
+    </a>
+
+    <a href="#output">
+        Output
+    </a>
+
+</nav>
+
+
+
+<main class="container">
+
+
+
+<!-- ==============================
+     AIM
+============================== -->
+
+<section
+    class="section"
+    id="aim"
+>
+
+    <h2>
+        Aim
+    </h2>
+
+    <p>
+
+        To automatically control an LED
+        using a Light Dependent Resistor
+        sensor connected to a Raspberry Pi.
+
+    </p>
+
+</section>
+
+
+
+<!-- ==============================
+     ABOUT
+============================== -->
+
+<section class="section">
+
+    <h2>
+        About the Experiment
+    </h2>
+
+    <p>
+
+        This experiment demonstrates an
+        automatic lighting system using
+        a Raspberry Pi and an LDR module.
+
+    </p>
+
+    <p>
+
+        The LDR module detects whether
+        the surrounding environment is
+        bright or dark.
+
+    </p>
+
+    <p>
+
+        The digital output of the LDR
+        module is connected to
+        <strong>GPIO17</strong>.
+
+    </p>
+
+    <p>
+
+        The LED is connected to
+        <strong>GPIO18</strong>.
+
+    </p>
+
+    <p>
+
+        When darkness is detected,
+        the Raspberry Pi turns the LED ON.
+
+        When sufficient light is detected,
+        the LED turns OFF.
+
+    </p>
+
+</section>
+
+
+
+<!-- ==============================
+     COMPONENTS
+============================== -->
+
+<section
+    class="section"
+    id="components"
+>
+
+    <h2>
+        Components Required
+    </h2>
+
+
+    <div class="components-grid">
+
+
+        <div class="component">
+
+            <strong>
+                Raspberry Pi
+            </strong>
+
+            <p>
+                Main controller
+            </p>
+
+        </div>
+
+
+        <div class="component">
+
+            <strong>
+                LDR Sensor Module
+            </strong>
+
+            <p>
+                Detects light level
+            </p>
+
+        </div>
+
+
+        <div class="component">
+
+            <strong>
+                LED
+            </strong>
+
+            <p>
+                Automatic light output
+            </p>
+
+        </div>
+
+
+        <div class="component">
+
+            <strong>
+                Resistor
+            </strong>
+
+            <p>
+                LED current limiting
+            </p>
+
+        </div>
+
+
+        <div class="component">
+
+            <strong>
+                Jumper Wires
+            </strong>
+
+            <p>
+                Circuit connections
+            </p>
+
+        </div>
+
+
+        <div class="component">
+
+            <strong>
+                Breadboard
+            </strong>
+
+            <p>
+                Prototype assembly
+            </p>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- ==============================
+     CONNECTIONS
+============================== -->
+
+<section
+    class="section"
+    id="connections"
+>
+
+    <h2>
+        Connections
+    </h2>
+
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Component
+                    </th>
+
+                    <th>
+                        Raspberry Pi GPIO
+                    </th>
+
+                    <th>
+                        Function
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                <tr>
+
+                    <td>
+                        LDR Digital Output
+                    </td>
+
+                    <td>
+                        GPIO17
+                    </td>
+
+                    <td>
+                        Digital Input
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+                        LED
+                    </td>
+
+                    <td>
+                        GPIO18
+                    </td>
+
+                    <td>
+                        Digital Output
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <h3>
+        LDR Connection
+    </h3>
+
+
+    <div class="connection-box">
+
+        LDR DO → GPIO17
+
+    </div>
+
+
+    <h3>
+        LED Connection
+    </h3>
+
+
+    <div class="connection-box">
+
+        GPIO18 → Resistor → LED → GND
+
+    </div>
+
+</section>
+
+
+
+<!-- ==============================
+     WORKING
+============================== -->
+
+<section
+    class="section"
+    id="working"
+>
+
+    <h2>
+        Working
+    </h2>
+
+
+    <p>
+
+        The Raspberry Pi continuously
+        reads the digital output
+        of the LDR sensor module.
+
+    </p>
+
+
+    <div class="connection-box">
+
+        light_status =
+        GPIO.input(LDR_DO)
+
+    </div>
+
+
+    <p>
+
+        According to the program,
+        an LDR digital output value
+        of <strong>0</strong>
+        represents darkness.
+
+    </p>
+
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        LDR Output
+                    </th>
+
+                    <th>
+                        Condition
+                    </th>
+
+                    <th>
+                        LED State
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                <tr>
+
+                    <td>
+                        0
+                    </td>
+
+                    <td>
+                        Dark
+                    </td>
+
+                    <td>
+                        ON
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+                        1
+                    </td>
+
+                    <td>
+                        Bright
+                    </td>
+
+                    <td>
+                        OFF
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <h3>
+        Automatic Control Flow
+    </h3>
+
+
+    <div class="connection-box">
+
+        Read LDR
+        <br>
+        ↓
+        <br>
+
+        Is LDR Output 0?
+        <br>
+        ↓
+        <br>
+
+        YES → Dark
+        <br>
+        ↓
+        <br>
+
+        LED ON
+        <br><br>
+
+        NO → Bright
+        <br>
+        ↓
+        <br>
+
+        LED OFF
+        <br>
+        ↓
+        <br>
+
+        Wait 1 Second
+        <br>
+        ↓
+        <br>
+
+        Repeat
+
+    </div>
+
+</section>
+
+
+
+<!-- ==============================
+     PROCEDURE
+============================== -->
+
+<section
+    class="section"
+    id="procedure"
+>
+
+    <h2>
+        Procedure
+    </h2>
+
+
+    <ol class="steps">
+
+        <li>
+
+            Connect the LDR sensor module
+            to the Raspberry Pi.
+
+        </li>
+
+
+        <li>
+
+            Connect the digital output
+            of the LDR module to
+            <strong>GPIO17</strong>.
+
+        </li>
+
+
+        <li>
+
+            Connect the LED to
+            <strong>GPIO18</strong>
+            through a current-limiting resistor.
+
+        </li>
+
+
+        <li>
+
+            Connect the LED ground
+            to Raspberry Pi GND.
+
+        </li>
+
+
+        <li>
+
+            Power ON the Raspberry Pi.
+
+        </li>
+
+
+        <li>
+
+            Open the Raspberry Pi terminal.
+
+        </li>
+
+
+        <li>
+
+            Create the Experiment 4
+            Python program.
+
+        </li>
+
+
+        <li>
+
+            Run the program.
+
+        </li>
+
+
+        <li>
+
+            Expose the LDR sensor
+            to normal light.
+
+        </li>
+
+
+        <li>
+
+            Observe that the LED remains OFF
+            when the sensor detects brightness.
+
+        </li>
+
+
+        <li>
+
+            Cover the LDR sensor
+            or place it in darkness.
+
+        </li>
+
+
+        <li>
+
+            Observe that the LED turns ON.
+
+        </li>
+
+    </ol>
+
+</section>
+
+
+
+<!-- ==============================
+     GPIO SETUP
+============================== -->
+
+<section class="section">
+
+    <h2>
+        GPIO Configuration
+    </h2>
+
+
+    <h3>
+        GPIO Numbering Mode
+    </h3>
+
+
+    <div class="connection-box">
+
+        GPIO.setmode(GPIO.BCM)
+
+    </div>
+
+
+    <p>
+
+        The program uses
+        <strong>BCM GPIO numbering</strong>.
+
+    </p>
+
+
+    <h3>
+        LDR Input
+    </h3>
+
+
+    <div class="connection-box">
+
+        GPIO.setup(LDR_DO, GPIO.IN)
+
+    </div>
+
+
+    <p>
+
+        GPIO17 is configured
+        as a digital input.
+
+    </p>
+
+
+    <h3>
+        LED Output
+    </h3>
+
+
+    <div class="connection-box">
+
+        GPIO.setup(LED, GPIO.OUT)
+
+    </div>
+
+
+    <p>
+
+        GPIO18 is configured
+        as a digital output.
+
+    </p>
+
+</section>
+
+
+
+<!-- ==============================
+     CODE
+============================== -->
+
+<section
+    class="section"
+    id="code"
+>
+
+    <h2>
+        Python Code
+    </h2>
+
+
+    <div class="code-header">
+
+        <span>
+            experiment4.py
+        </span>
+
+
+        <button
+            class="copy-button"
+            onclick="copyCode()"
+        >
+
+            Copy Code
+
+        </button>
+
+    </div>
+
+
+    <pre id="pythonCode"><code>import RPi.GPIO as GPIO
+import time
+
+LDR_DO = 17
+LED = 18
+
+GPIO.setmode(GPIO.BCM)
+
+GPIO.setup(LDR_DO, GPIO.IN)
+GPIO.setup(LED, GPIO.OUT)
+
+try:
+
+    while True:
+
+        light_status = GPIO.input(LDR_DO)
+
+        if light_status == 0:
+
+            # Dark
+            GPIO.output(LED, GPIO.HIGH)
+
+        else:
+
+            # Bright
+            GPIO.output(LED, GPIO.LOW)
+
+        time.sleep(1)
+
+except KeyboardInterrupt:
+
+    GPIO.cleanup()</code></pre>
+
+
+    <div class="note">
+
+        The uploaded Experiment 4 code
+        has been formatted with proper
+        indentation for easier reading.
+        The original logic remains the same.
+
+    </div>
+
+</section>
+
+
+
+<!-- ==============================
+     CODE EXPLANATION
+============================== -->
+
+<section class="section">
+
+    <h2>
+        Code Explanation
+    </h2>
+
+
+    <h3>
+        Import GPIO Library
+    </h3>
+
+
+    <div class="connection-box">
+
+        import RPi.GPIO as GPIO
+
+    </div>
+
+
+    <p>
+
+        Imports the Raspberry Pi GPIO
+        library used to control GPIO pins.
+
+    </p>
+
+
+    <h3>
+        Import Time Library
+    </h3>
+
+
+    <div class="connection-box">
+
+        import time
+
+    </div>
+
+
+    <p>
+
+        Used to add the one-second delay
+        between sensor readings.
+
+    </p>
+
+
+    <h3>
+        LDR GPIO
+    </h3>
+
+
+    <div class="connection-box">
+
+        LDR_DO = 17
+
+    </div>
+
+
+    <p>
+
+        Assigns GPIO17 as the
+        LDR digital input.
+
+    </p>
+
+
+    <h3>
+        LED GPIO
+    </h3>
+
+
+    <div class="connection-box">
+
+        LED = 18
+
+    </div>
+
+
+    <p>
+
+        Assigns GPIO18 as the
+        LED output.
+
+    </p>
+
+
+    <h3>
+        Read LDR
+    </h3>
+
+
+    <div class="connection-box">
+
+        light_status =
+        GPIO.input(LDR_DO)
+
+    </div>
+
+
+    <p>
+
+        Reads the current digital state
+        of the LDR module.
+
+    </p>
+
+
+    <h3>
+        Darkness Detection
+    </h3>
+
+
+    <div class="connection-box">
+
+        if light_status == 0:
+
+    </div>
+
+
+    <p>
+
+        According to the experiment code,
+        LOW indicates a dark condition.
+
+    </p>
+
+
+    <h3>
+        Turn LED ON
+    </h3>
+
+
+    <div class="connection-box">
+
+        GPIO.output(
+            LED,
+            GPIO.HIGH
+        )
+
+    </div>
+
+
+    <p>
+
+        Turns the LED ON when
+        darkness is detected.
+
+    </p>
+
+
+    <h3>
+        Turn LED OFF
+    </h3>
+
+
+    <div class="connection-box">
+
+        GPIO.output(
+            LED,
+            GPIO.LOW
+        )
+
+    </div>
+
+
+    <p>
+
+        Turns the LED OFF when
+        the area is bright.
+
+    </p>
+
+
+    <h3>
+        Delay
+    </h3>
+
+
+    <div class="connection-box">
+
+        time.sleep(1)
+
+    </div>
+
+
+    <p>
+
+        Waits one second before
+        checking the light condition again.
+
+    </p>
+
+
+    <h3>
+        GPIO Cleanup
+    </h3>
+
+
+    <div class="connection-box">
+
+        GPIO.cleanup()
+
+    </div>
+
+
+    <p>
+
+        Releases the Raspberry Pi GPIO
+        resources when the program is stopped
+        using Ctrl + C.
+
+    </p>
+
+</section>
+
+
+
+<!-- ==============================
+     RUN
+============================== -->
+
+<section class="section">
+
+    <h2>
+        Run the Program
+    </h2>
+
+
+    <p>
+
+        Open the terminal and run:
+
+    </p>
+
+
+    <div class="connection-box">
+
+        python3 experiment4.py
+
+    </div>
+
+
+    <p>
+
+        The program continuously monitors
+        the LDR sensor until you stop it.
+
+    </p>
+
+
+    <p>
+
+        To stop the program:
+
+    </p>
+
+
+    <div class="connection-box">
+
+        Ctrl + C
+
+    </div>
+
+</section>
+
+
+
+<!-- ==============================
+     OUTPUT
+============================== -->
+
+<section
+    class="section"
+    id="output"
+>
+
+    <h2>
+        Expected Output
+    </h2>
+
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Environment
+                    </th>
+
+                    <th>
+                        LDR Status
+                    </th>
+
+                    <th>
+                        LED Output
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                <tr>
+
+                    <td>
+                        Dark
+                    </td>
+
+                    <td>
+                        0
+                    </td>
+
+                    <td>
+                        LED ON
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+                        Bright
+                    </td>
+
+                    <td>
+                        1
+                    </td>
+
+                    <td>
+                        LED OFF
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <h3>
+        Dark Condition
+    </h3>
+
+
+    <div class="output-box">
+
+        LDR detects darkness
+        <br>
+        ↓
+        <br>
+        LED ON
+
+    </div>
+
+
+    <h3>
+        Bright Condition
+    </h3>
+
+
+    <div class="output-box">
+
+        LDR detects light
+        <br>
+        ↓
+        <br>
+        LED OFF
+
+    </div>
+
+</section>
+
+
+
+<!-- ==============================
+     RESULT
+============================== -->
+
+<section class="section">
+
+    <h2>
+        Result
+    </h2>
+
+
+    <div class="result-box">
+
+        The LDR sensor was successfully
+        interfaced with the Raspberry Pi.
+
+        <br><br>
+
+        The Raspberry Pi automatically
+        turns the LED ON when darkness
+        is detected.
+
+        <br><br>
+
+        The LED automatically turns OFF
+        when the environment becomes bright.
+
+        <br><br>
+
+        <strong>
+
+            Dark → LED ON
+
+            <br>
+
+            Bright → LED OFF
+
+        </strong>
+
+    </div>
+
+</section>
+
+
+
+<!-- ==============================
+     LEARNING
+============================== -->
+
+<section class="section">
+
+    <h2>
+        What You Learn
+    </h2>
+
+
+    <ul>
+
+        <li>
+            Raspberry Pi GPIO programming
+        </li>
+
+        <li>
+            Digital sensor input
+        </li>
+
+        <li>
+            LED output control
+        </li>
+
+        <li>
+            LDR light detection
+        </li>
+
+        <li>
+            Automatic control logic
+        </li>
+
+        <li>
+            BCM GPIO numbering
+        </li>
+
+        <li>
+            GPIO cleanup
+        </li>
+
+        <li>
+            Basic automatic lighting system
+        </li>
+
+    </ul>
+
+</section>
+
+
+
+</main>
+
+
+
+<!-- ==============================
+     FOOTER
+============================== -->
+
+<footer>
+
+    <strong>
+        Raspberry Pi Experiment No. 4
+    </strong>
+
+    <br>
+
+    Automatic Light Control using LDR
+
+</footer>
+
+
+
+<!-- ==============================
+     JAVASCRIPT
+============================== -->
+
+<script>
+
+    function copyCode() {
+
+        const code =
+            document
+            .getElementById("pythonCode")
+            .innerText;
+
+
+        navigator.clipboard
+            .writeText(code);
+
+
+        const button =
+            document
+            .querySelector(".copy-button");
+
+
+        button.innerText =
+            "Copied!";
+
+
+        setTimeout(
+            function () {
+
+                button.innerText =
+                    "Copy Code";
+
+            },
+            1500
+        );
+
+    }
+
+</script>
+
+
+</body>
+
+</html>
